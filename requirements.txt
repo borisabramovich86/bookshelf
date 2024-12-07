@@ -1,0 +1,13 @@
+opencv-python
+numpy==1.26.4
+easyocr==1.7.2
+requests
+supervision
+tqdm
+autodistill
+autodistill_grounded_sam
+openai
+roboflow
+scikit-learn
+scipy
+matplotlib
