@@ -6,15 +6,11 @@ import numpy as np
 import os
 
 class EasyOCRProcessor(OCRProcessor):
-    def __init__(self, visualize):
-        results_dir = "ocr_results/easyocr"
-        timestamp = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
-        self.filename = f"{results_dir}/{timestamp}"
-        if not os.path.exists(results_dir):
-            os.mkdir(results_dir)
+    def __init__(self, visualize, save_to_file):
+        self.model = "easyocr"
 
         self.__reader = easyocr.Reader(['en'])
-        super().__init__(visualize)
+        super().__init__(visualize, save_to_file)
     
     def create_ocr_results_string(self, ocr_results):
         detection_string = ""
@@ -33,20 +29,32 @@ class EasyOCRProcessor(OCRProcessor):
         for i, mask in enumerate(results.mask):
             mask = mask.astype(np.uint8) * 255
             processed_image = self.process_mask(original_image, mask)
-            ocr_results = self.__reader.readtext(processed_image)
+            ocr_results = self.__reader.readtext(processed_image, rotation_info=[90, 180 ,270])
 
             if self.visualize:
                 cv2.imshow(f"Segment {i+1}", processed_image)
                 cv2.waitKey(0)
             
-            with open(self.filename, 'a+') as f:
-                header_string = f"OCR results for Segment {i+1}:"
-                self.print_and_write(f, header_string)
-                detection_string = self.create_ocr_results_string(ocr_results)
-                self.print_and_write(f, detection_string)
-                self.print_and_write(f, "------------------------------")
+            header_string = f"OCR results for Segment {i+1}:"
+            detection_string = self.create_ocr_results_string(ocr_results)
+
+            print(header_string)
+            print(detection_string)
+            print("------------------------------")
+
+            if self.save_to_file:
+                timestamp = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+                filename = f"{self.results_dir}/{self.model}/{timestamp}"
+                with open(filename, 'a+') as f:
+                    header_string = f"OCR results for Segment {i+1}:"
+                    f.write(header_string)
+                    detection_string = self.create_ocr_results_string(ocr_results)
+                    f.write(f"{detection_string}\n")
+                    f.write("------------------------------")
                     
-            f.close()
+                f.close()
+
+            
 
         cv2.destroyAllWindows()
 

@@ -43,7 +43,7 @@ def main():
     parser.add_option("-i", "--image", dest="image", help="Image to process")
     parser.add_option("-v", "--visualize", help="Visualize after segmentation", default=False, action='store_true')
     parser.add_option("-s", "--save", help="Save OCR analysis to file", default=False, action='store_true')
-    parser.add_option("-c", "--confidence", help="Set mininmum confidence for ocr results", default=False, action='store_true')
+    parser.add_option("-c", "--confidence", help="Set mininmum confidence for ocr results")
     parser.add_option("-t", "--type", help="OCR processor type", default='easyocr')
     args, opts = parser.parse_args()
 
@@ -51,12 +51,16 @@ def main():
 
     image_path = args.image
     processor_type = args.type
+    save_to_file = args.save
+    visualize = args.visualize
+    min_confidence = args.confidence
+
     image = read_image(image_path)
     sam_results = analyze_image(image_path, image, args.visualize)
 
     processor_factory = OCRProcessorFactory()
     processor = processor_factory.get_processor(processor_type)
-    processor_obj = processor(args.visualize)
+    processor_obj = processor(visualize, save_to_file)
 
     processor_obj.process_all_masks(sam_results, image_path)
     

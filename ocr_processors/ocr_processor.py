@@ -1,9 +1,16 @@
 import cv2
 import numpy as np
+import os
 
 class OCRProcessor:
-    def __init__(self, visualize):
+    def __init__(self, visualize, save_to_file):
         self.visualize = visualize
+        self.save_to_file = save_to_file
+        self.results_dir = "ocr_results"
+        
+        if save_to_file:
+            if not os.path.exists(self.results_dir):
+                os.mkdir(self.results_dir)
     
     def process_mask(self,original_image, mask):
         # Create a colored mask
@@ -19,11 +26,7 @@ class OCRProcessor:
         rotated = cv2.rotate(result, cv2.ROTATE_90_COUNTERCLOCKWISE)
         colored = cv2.cvtColor(rotated, cv2.COLOR_RGB2BGR)
         return colored
-    
-    def print_and_write(self, file, text):
-        print(text)
-        file.write(f"{text}\n")
-
+        
 
     def process_masks(self, results, image_path):
         pass
