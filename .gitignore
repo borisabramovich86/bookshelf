@@ -5,3 +5,4 @@ TODO
 *.pkl
 .vscode/*
 ocr_processors/__pycache__/*
+ocr_results/*
