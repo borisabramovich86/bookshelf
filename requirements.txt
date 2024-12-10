@@ -2,7 +2,7 @@ opencv-python
 numpy==1.26.4
 easyocr==1.7.2
 pytesseract==0.3.13
-ollama-0.4.4
+ollama==0.4.4
 requests
 supervision
 tqdm

@@ -17,26 +17,29 @@ def read_image(image):
     return image
 
 def analyze_image(image_name, image, visualize):
-    file_path = f"{image_name}_prediction_results.pkl"
+    file_path = f"sam_results/{image_name}_prediction_results.pkl"
+    results = None
+
     if os.path.exists(file_path):
         with open(file_path, "rb") as f:
-            loaded_results = pickle.load(f)
-            return loaded_results
+            results = pickle.load(f)
+            
     else:
         base_model = GroundedSAM(ontology=CaptionOntology({"book spine": "book spine"}), box_threshold=0.1)
         results = base_model.predict(image)
 
         with open(f"{image_name}_prediction_results.pkl", "wb") as f:
             pickle.dump(results, f)
-
-        if visualize:
-            plot(
-                image=image,
-                classes=base_model.ontology.classes(),
-                detections=results)
                 
         base_model.label("./context_images", extension=".jpeg")
-        return results
+    
+    if visualize:
+        plot(
+            image=image,
+            classes=base_model.ontology.classes(),
+            detections=results)
+    
+    return results
 
 def main():
     parser = optparse.OptionParser()
@@ -49,7 +52,9 @@ def main():
 
     print("Running with args:", args)
 
-    image_path = args.image
+    book_images_dir = "resources/bookshelf_images"
+
+    image_path = f"{book_images_dir}/{args.image}"
     processor_type = args.type
     save_to_file = args.save
     visualize = args.visualize

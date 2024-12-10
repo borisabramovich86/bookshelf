@@ -23,14 +23,7 @@ class OllamaProcessor(OCRProcessor):
                 }]
             )
         
-        print(response)
-
-        # for i, mask in enumerate(results.mask):
-        #     mask = mask.astype(np.uint8) * 255
-        #     processed_image = self.process_mask(original_image, mask)
-
-        #     _, buffer = cv2.imencode('.jpg', processed_image)
-        #     image_base64 = base64.b64encode(buffer).decode('utf-8')
+        print(response.message.content)
             
         cv2.destroyAllWindows()
 
