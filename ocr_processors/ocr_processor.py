@@ -17,7 +17,8 @@ class OCRProcessor:
             if not os.path.exists(self.results_dir):
                 os.mkdir(self.results_dir)
     
-    def analyze_image(self, image_name, image, visualize):
+    def analyze_image(self, image, visualize):
+        image_name = image.filename
         file_path = f"sam_results/{image_name}_prediction_results.pkl"
         results = None
 
@@ -58,11 +59,11 @@ class OCRProcessor:
         return colored
         
 
-    def process_masks(self, results, image_path):
+    def process_masks(self, results, image):
         pass
 
     def create_ocr_results_string():
         pass
 
-    def process(self, image_path, visualize):
+    def process(self, image, visualize):
         pass

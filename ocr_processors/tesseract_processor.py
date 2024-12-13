@@ -7,9 +7,8 @@ class TesseractProcessor(OCRProcessor):
     def __init__(self, visualize, save_to_file):
         super().__init__(visualize, save_to_file)
 
-    def process_all_masks(self, results, image_path):
-        original_image = cv2.imread(image_path)
-        original_image = cv2.cvtColor(original_image, cv2.COLOR_BGR2GRAY)
+    def process_masks(self, results, image):
+        original_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
         scale_factor = 300 / 72
         original_image = cv2.resize(original_image, None, fx=scale_factor, fy=scale_factor, interpolation=cv2.INTER_CUBIC)
@@ -41,7 +40,6 @@ class TesseractProcessor(OCRProcessor):
 
         cv2.destroyAllWindows()
 
-    def process(self, image_path, visualize):
-        image = cv2.imread(image_path)
-        sam_results = self.analyze_image(image_path, image, visualize)
-        return self.process_all_masks(sam_results, image_path)
+    def process(self, image, visualize):
+        sam_results = self.analyze_image(image, visualize)
+        return self.process_masks(sam_results, image)

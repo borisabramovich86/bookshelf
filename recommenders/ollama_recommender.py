@@ -45,3 +45,4 @@ class OllamaBookRecommender(BookRecommender):
         recommendations = self.get_recommendations(favorite_books, new_books)
         print("\nRecommendations:\n")
         print(recommendations)
+        return recommendations

@@ -21,10 +21,8 @@ class EasyOCRProcessor(OCRProcessor):
                 detection_string += f"{text} "
         return detection_string
 
-
-    def process_all_masks(self, results, image_path):
-        original_image = cv2.imread(image_path)
-        original_image = cv2.cvtColor(original_image, cv2.COLOR_BGR2RGB)
+    def process_masks(self, results, image):
+        original_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         detected_books = []
 
         for i, mask in enumerate(results.mask):
@@ -62,7 +60,6 @@ class EasyOCRProcessor(OCRProcessor):
 
         cv2.destroyAllWindows()
 
-    def process(self, image_path, visualize):
-        image = cv2.imread(image_path)
-        sam_results = self.analyze_image(image_path, image, visualize)
-        return self.process_all_masks(sam_results, image_path)
+    def process(self, image, visualize):
+        sam_results = self.analyze_image(image, visualize)
+        return self.process_masks(sam_results, image)

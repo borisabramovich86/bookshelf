@@ -9,3 +9,4 @@ recommenders/__pycache__/*
 ocr_results/*
 resources/book_data/*
 dtos/__pycache__/*
+__pycache__/*
