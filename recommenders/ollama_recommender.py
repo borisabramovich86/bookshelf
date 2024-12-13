@@ -1,7 +1,7 @@
 from recommenders.recommender import BookRecommender
 import pandas as pd
 from ollama import chat
-from dtos.book_dto import FavouriteBooks, FavouriteBook, DetectedBook
+from dtos.book_dto import FavouriteBook, DetectedBook, DetectedBooks
 
 
 class OllamaBookRecommender(BookRecommender):
@@ -22,12 +22,13 @@ class OllamaBookRecommender(BookRecommender):
         {new_books_str}
 
         Which of these new books would you recommend to me and why?
+        Output only the title and author of the recommended books.
         """
 
         response = chat(model='llama3.2',
-                        format=FavouriteBooks.model_json_schema(),
+                        format=DetectedBooks.model_json_schema(),
                         messages=[{"role": "user", "content": prompt}])
-        recommended_books = FavouriteBooks.model_validate_json(response.message.content)
+        recommended_books = DetectedBooks.model_validate_json(response.message.content)
         return recommended_books
 
     def recommend(self, new_books):
