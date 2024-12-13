@@ -1,15 +1,8 @@
 from ocr_processors.ocr_processor import OCRProcessor
 from ollama import chat
-from pydantic import BaseModel
-from pydantic_ai import Agent
+from dtos.book_dto import DetectedBooks
 import base64 
 
-class Book(BaseModel):
-    title: str
-    author: str
-
-class Books(BaseModel):
-    books: list[Book]
 
 class OllamaProcessor(OCRProcessor):
     def __init__(self, visualize, save_to_file):
@@ -34,14 +27,14 @@ class OllamaProcessor(OCRProcessor):
     def process_with_pydantic_ollama(self, image_path):
         response = chat(
                 model='llama3.2-vision',
-                format=Books.model_json_schema(),
+                format=DetectedBooks.model_json_schema(),
                 messages=[{
                     'role': 'user',
                     'content': 'This is a picture of a bookshelf. Please extract the author and title of each book',
                     'images': [image_path]
                 }]
             )
-        detected_books = Books.model_validate_json(response.message.content)
+        detected_books = DetectedBooks.model_validate_json(response.message.content)
         return detected_books
 
     def process_image(self, image_path):
