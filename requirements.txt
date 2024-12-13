@@ -3,6 +3,7 @@ numpy==1.26.4
 easyocr==1.7.2
 pytesseract==0.3.13
 ollama==0.4.4
+pydantic-ai==0.0.12
 requests
 supervision
 tqdm

@@ -40,3 +40,8 @@ class TesseractProcessor(OCRProcessor):
             print(ocr_result)
 
         cv2.destroyAllWindows()
+
+    def process(self, image_path, visualize):
+        image = cv2.imread(image_path)
+        sam_results = self.analyze_image(image_path, image, visualize)
+        return self.process_all_masks(sam_results, image_path)

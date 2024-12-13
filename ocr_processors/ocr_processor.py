@@ -1,6 +1,11 @@
 import cv2
 import numpy as np
 import os
+import pickle
+
+from autodistill.utils import plot
+from autodistill.detection import CaptionOntology
+from autodistill_grounded_sam import GroundedSAM
 
 class OCRProcessor:
     def __init__(self, visualize, save_to_file):
@@ -11,6 +16,31 @@ class OCRProcessor:
         if save_to_file:
             if not os.path.exists(self.results_dir):
                 os.mkdir(self.results_dir)
+    
+    def analyze_image(self, image_name, image, visualize):
+        file_path = f"sam_results/{image_name}_prediction_results.pkl"
+        results = None
+
+        if os.path.exists(file_path):
+            with open(file_path, "rb") as f:
+                results = pickle.load(f)
+                
+        else:
+            base_model = GroundedSAM(ontology=CaptionOntology({"book spine": "book spine"}), box_threshold=0.1)
+            results = base_model.predict(image)
+
+            with open(f"{image_name}_prediction_results.pkl", "wb") as f:
+                pickle.dump(results, f)
+                    
+            base_model.label("./context_images", extension=".jpeg")
+        
+        if visualize:
+            plot(
+                image=image,
+                classes=base_model.ontology.classes(),
+                detections=results)
+        
+        return results
     
     def process_mask(self,original_image, mask):
         # Create a colored mask
@@ -32,4 +62,7 @@ class OCRProcessor:
         pass
 
     def create_ocr_results_string():
+        pass
+
+    def process(self, image_path, visualize):
         pass

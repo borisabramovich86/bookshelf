@@ -1,19 +1,26 @@
 from ocr_processors.ocr_processor import OCRProcessor
-import cv2
-import numpy as np
-import base64
 from ollama import chat
-from ollama import ChatResponse
+from pydantic import BaseModel
+from pydantic_ai import Agent
+import base64 
+
+class Book(BaseModel):
+    title: str
+    author: str
+
+class Books(BaseModel):
+    books: list[Book]
 
 class OllamaProcessor(OCRProcessor):
     def __init__(self, visualize, save_to_file):
         self.model = "ollama"
         super().__init__(visualize, save_to_file)
-
-    def process_all_masks(self, results, image_path):
-        original_image = cv2.imread(image_path)
-        original_image = cv2.cvtColor(original_image, cv2.COLOR_BGR2RGB)
-
+    
+    def encode_image(self, image_path):
+        with open(image_path, "rb") as image_file:
+            return base64.b64encode(image_file.read()).decode('utf-8')
+        
+    def process_with_ollama(self, image_path):
         response = chat(
                 model='llama3.2-vision',
                 messages=[{
@@ -22,9 +29,26 @@ class OllamaProcessor(OCRProcessor):
                     'images': [image_path]
                 }]
             )
-        
-        print(response.message.content)
-            
-        cv2.destroyAllWindows()
+        return response.message.content
+    
+    def process_with_pydantic_ollama(self, image_path):
+        response = chat(
+                model='llama3.2-vision',
+                format=Books.model_json_schema(),
+                messages=[{
+                    'role': 'user',
+                    'content': 'This is a picture of a bookshelf. Please extract the author and title of each book',
+                    'images': [image_path]
+                }]
+            )
+        detected_books = Books.model_validate_json(response.message.content)
+        return detected_books
 
+    def process_image(self, image_path):
+        detected_books_response = self.process_with_pydantic_ollama(image_path)
+        print(detected_books_response)
+        return detected_books_response
+    
+    def process(self, image_path, visualize):
+        return self.process_image(image_path)
 

@@ -25,6 +25,7 @@ class EasyOCRProcessor(OCRProcessor):
     def process_all_masks(self, results, image_path):
         original_image = cv2.imread(image_path)
         original_image = cv2.cvtColor(original_image, cv2.COLOR_BGR2RGB)
+        detected_books = []
 
         for i, mask in enumerate(results.mask):
             mask = mask.astype(np.uint8) * 255
@@ -35,8 +36,11 @@ class EasyOCRProcessor(OCRProcessor):
                 cv2.imshow(f"Segment {i+1}", processed_image)
                 cv2.waitKey(0)
             
+            
             header_string = f"OCR results for Segment {i+1}:"
             detection_string = self.create_ocr_results_string(ocr_results)
+
+            detected_books.append(detection_string)
 
             print(header_string)
             print(detection_string)
@@ -54,8 +58,11 @@ class EasyOCRProcessor(OCRProcessor):
                     
                 f.close()
 
-            
+            return detected_books
 
         cv2.destroyAllWindows()
 
-
+    def process(self, image_path, visualize):
+        image = cv2.imread(image_path)
+        sam_results = self.analyze_image(image_path, image, visualize)
+        return self.process_all_masks(sam_results, image_path)

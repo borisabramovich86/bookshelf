@@ -5,5 +5,7 @@ TODO
 *.pkl
 .vscode/*
 ocr_processors/__pycache__/*
+recommenders/__pycache__/*
 ocr_results/*
 resources/book_data/*
+
