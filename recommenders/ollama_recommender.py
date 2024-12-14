@@ -2,7 +2,7 @@ from recommenders.recommender import BookRecommender
 import pandas as pd
 from ollama import chat
 from dtos.book_dto import FavouriteBook, DetectedBook, DetectedBooks
-
+import logging
 
 class OllamaBookRecommender(BookRecommender):
     def __init__(self):
@@ -32,6 +32,7 @@ class OllamaBookRecommender(BookRecommender):
         return recommended_books
 
     def recommend(self, new_books):
+        logging.info('Parsing favourite books')
         csv_file = 'resources/book_data/my_books.csv'
         df = pd.read_csv(csv_file, keep_default_na=False, names=['Title', 'Author', 'ISBN', 'MyRating', 'Publisher'])
 
@@ -41,8 +42,10 @@ class OllamaBookRecommender(BookRecommender):
             isbn=row['ISBN'],
             rating=row['MyRating'],
             publisher=row['Publisher']) for _, row in df.iterrows()]
-
+        
+        logging.info('Recommending new books using ollama')
         recommendations = self.get_recommendations(favorite_books, new_books)
-        print("\nRecommendations:\n")
-        print(recommendations)
+
+        logging.info("\nRecommendations:\n")
+        logging.info(recommendations)
         return recommendations
