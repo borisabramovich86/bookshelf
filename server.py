@@ -1,6 +1,11 @@
 from flask import Flask, request, jsonify
 from analyze_and_recommend import analyze_and_recommend
 import logging
+import jsonpickle
+import json
+import jsons
+
+logging.getLogger().setLevel(logging.DEBUG)
 
 app = Flask(__name__)
 
@@ -16,11 +21,13 @@ def recommend_books_from_image():
     recommender_type = "ollama"
 
     results = analyze_and_recommend(image, processor_type, recommender_type, visualize=False, save_to_file=False)
-    return results.json()
+    json_results = jsonify(results.model_dump()["books"])
+    return json_results
 
 @app.route('/health', methods=['GET'])
 def health_check():
     return jsonify({"ok": True})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.logger.setLevel(logging.INFO)
+    app.run(port=5000)
