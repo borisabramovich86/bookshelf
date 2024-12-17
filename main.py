@@ -1,6 +1,9 @@
 import optparse
 import cv2 
 from analyze_and_recommend import analyze_and_recommend
+import logging 
+
+logging.getLogger().setLevel(logging.INFO)
 
 def main():
     parser = optparse.OptionParser()

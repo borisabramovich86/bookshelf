@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 import os
-import pickle
+import logging
 
 from autodistill.utils import plot
 from autodistill.detection import CaptionOntology
@@ -18,22 +18,11 @@ class OCRProcessor:
                 os.mkdir(self.results_dir)
     
     def analyze_image(self, image, visualize):
-        image_name = image.filename
-        file_path = f"sam_results/{image_name}_prediction_results.pkl"
+        logging.info("Processing image using GroundedSAM model")
         results = None
 
-        if os.path.exists(file_path):
-            with open(file_path, "rb") as f:
-                results = pickle.load(f)
-                
-        else:
-            base_model = GroundedSAM(ontology=CaptionOntology({"book spine": "book spine"}), box_threshold=0.1)
-            results = base_model.predict(image)
-
-            with open(f"{image_name}_prediction_results.pkl", "wb") as f:
-                pickle.dump(results, f)
-                    
-            base_model.label("./context_images", extension=".jpeg")
+        base_model = GroundedSAM(ontology=CaptionOntology({"book spine": "book spine"}), box_threshold=0.1)
+        results = base_model.predict(image)
         
         if visualize:
             plot(
